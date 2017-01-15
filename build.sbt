@@ -1,4 +1,4 @@
-val scalaV = "2.12.0"
+val scalaV = "2.12.1"
 
 lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
