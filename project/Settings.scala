@@ -25,6 +25,7 @@ object Settings {
   ))
 
   // describe all your client dependencies here
+  // use of %%%: https://github.com/vmunier/play-with-scalajs-example/issues/20#issuecomment-56589251
   val scalajsDependencies = Def.setting(Seq(
     "org.scala-js" %%% "scalajs-dom" % versions.scalajsDom
   ))
