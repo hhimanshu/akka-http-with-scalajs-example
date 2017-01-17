@@ -14,5 +14,5 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.1.4")
 // use Scala.js along with any sbt-web server
 addSbtPlugin("com.vmunier" % "sbt-web-scalajs" % "1.0.3")
 
-addSbtPlugin("com.typesafe.sbteclipse" % "sbteclipse-plugin" % "4.0.0")
+// Play template engine
 addSbtPlugin("com.typesafe.sbt" % "sbt-twirl" % "1.3.0")

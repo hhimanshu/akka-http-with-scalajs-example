@@ -4,15 +4,23 @@ name := Settings.name
 
 lazy val server = (project in file("server")).settings(
   scalaVersion := scala,
+
+  /**
+    * Scala.js projects are collected in the scalaJSProjects setting key
+    * of the SbtWeb project.
+    * The plugin does nothing if scalaJSProjects is not specified or is empty
+    *
+    * scalaJSProjects setting lists the Scala.js projects whose output is used by the server.
+    *
+    * https://github.com/vmunier/sbt-web-scalajs
+    */
   scalaJSProjects := Seq(client),
   pipelineStages in Assets := Seq(scalaJSPipeline),
   // triggers scalaJSPipeline when using compile or continuous compilation
-  compile in Compile <<= (compile in Compile) dependsOn scalaJSPipeline,
+  compile in Compile := ((compile in Compile) dependsOn scalaJSPipeline).value,
   libraryDependencies ++= Settings.jvmDependencies.value,
   WebKeys.packagePrefix in Assets := "public/",
-  managedClasspath in Runtime += (packageBin in Assets).value,
-  // Compile the project before generating Eclipse files, so that generated .scala or .class files for Twirl templates are present
-  EclipseKeys.preTasks := Seq(compile in Compile)
+  managedClasspath in Runtime += (packageBin in Assets).value
 ).enablePlugins(SbtWeb, SbtTwirl, JavaAppPackaging).
   dependsOn(sharedJvm)
 
@@ -27,6 +35,12 @@ lazy val client = (project in file("client")).settings(
   persistLauncher := true,
   persistLauncher in Test := false,
   libraryDependencies ++= Settings.scalajsDependencies.value
+
+  /**
+    * ScalaJSWeb should be manually added to the Scala.js projects
+    * that you want to connect to your SbtWeb project.
+    * https://github.com/vmunier/sbt-web-scalajs
+    */
 ).enablePlugins(ScalaJSPlugin, ScalaJSWeb).
   dependsOn(sharedJs)
 
@@ -54,8 +68,8 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
 lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js
 
-// loads the server project at sbt startup
 /**
+  * loads the server project at sbt startup
   * project <project_name> sets the current project. It is similar to
   * using cd in bash or `use mydb` in MySQL.
   */
