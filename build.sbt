@@ -55,4 +55,8 @@ lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js
 
 // loads the server project at sbt startup
+/**
+  * project <project_name> sets the current project. It is similar to
+  * using cd in bash or `use mydb` in MySQL.
+  */
 onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
