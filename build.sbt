@@ -2,6 +2,37 @@ import Settings.versions._
 
 name := Settings.name
 
+val sharedDirectory = "shared"
+/**
+  * We need cross building to make have a shared project with sources
+  * shared between server and client. CrossProject is a builder that comes
+  * in a plugin with ScalaJS and helps us achieve that.
+  * There are other CrossTypes (Full [default] and Dummy) which provides a
+  * very different structure than one we are using here. Read more about them
+  * at
+  * https://www.scala-js.org/doc/project/cross-build.html
+  * https://www.scala-js.org/api/sbt-scalajs/0.6.14/#org.scalajs.sbtplugin.cross.CrossProject
+  */
+lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
+  settings(
+    scalaVersion := scala,
+    libraryDependencies ++= Settings.sharedDependencies.value
+  )
+  .jvmSettings(
+    unmanagedResourceDirectories in Compile += file(".") / sharedDirectory / "src" / "main" / "resources"
+  )
+  .jsSettings(
+    unmanagedResourceDirectories in Compile += file(".") / sharedDirectory / "src" / "main" / "resources"
+  )
+  // This creates new JS Project combining the ScalaJSWeb
+  // This does not touches the JVM project
+  .jsConfigure(_ enablePlugins ScalaJSWeb)
+
+// Needed so that SBT can find projects
+// reference: https://www.scala-js.org/api/sbt-scalajs/0.6.14/#org.scalajs.sbtplugin.cross.CrossProject
+lazy val sharedJvm = shared.jvm
+lazy val sharedJs = shared.js
+
 lazy val server = (project in file("server")).settings(
   scalaVersion := scala,
 
@@ -44,29 +75,8 @@ lazy val client = (project in file("client")).settings(
 ).enablePlugins(ScalaJSPlugin, ScalaJSWeb).
   dependsOn(sharedJs)
 
-/**
-  * We need cross building to make have a shared project with sources
-  * shared between server and client. CrossProject is a builder that comes
-  * in a plugin with ScalaJS and helps us achieve that.
-  * There are other CrossTypes (Full [default] and Dummy) which provides a
-  * very different structure than one we are using here. Read more about them
-  * at
-  * https://www.scala-js.org/doc/project/cross-build.html
-  * https://www.scala-js.org/api/sbt-scalajs/0.6.14/#org.scalajs.sbtplugin.cross.CrossProject
-  */
-lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
-  settings(
-    scalaVersion := scala,
-    libraryDependencies ++= Settings.sharedDependencies.value
-  ).
-  // This creates new JS Project combining the ScalaJSWeb
-  // This does not touches the JVM project
-  jsConfigure(_ enablePlugins ScalaJSWeb)
 
-// Needed so that SBT can find projects
-// reference: https://www.scala-js.org/api/sbt-scalajs/0.6.14/#org.scalajs.sbtplugin.cross.CrossProject
-lazy val sharedJvm = shared.jvm
-lazy val sharedJs = shared.js
+// TODO: Add release command
 
 /**
   * loads the server project at sbt startup

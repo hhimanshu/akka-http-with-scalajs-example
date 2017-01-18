@@ -1,16 +1,20 @@
 package example
 
-import akka.http.scaladsl.server.Directives
-import shared.SharedMessages
+import akka.http.scaladsl.server.{Directives, Route}
+import com.typesafe.config.ConfigFactory
+
+object Config {
+  private val c = ConfigFactory.load().getConfig("todoMvc")
+  val productionMode: Boolean = c.getBoolean("productionMode")
+}
 
 class WebService() extends Directives {
 
-  val route = {
+  val route: Route = {
     pathSingleSlash {
       get {
-        complete {
-          example.html.index.render(SharedMessages.itWorks)
-        }
+        if (Config.productionMode) getFromResource("web/index-full.html")
+        else getFromResource("web/index.html")
       }
     } ~
       pathPrefix("assets" / Remaining) { file =>
