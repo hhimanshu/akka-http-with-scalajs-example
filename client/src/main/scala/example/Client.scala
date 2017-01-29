@@ -9,9 +9,10 @@ import scalatags.JsDom.all._
 
 @JSExport
 object Client extends js.JSApp {
-  private val host = sys.env.getOrElse("APP_URL", "localhost")
   @JSExport
   def main(): Unit = {
+    val host = sys.env.getOrElse("APP_URL", "localhost")
+
     dom.document.body.appendChild(
       div(
         h1("Hello World!"),
