@@ -71,3 +71,10 @@ WebKeys.exportedMappings in Assets ++= (for ((file, path) <- (mappings in Assets
 ...
 )
 ```
+
+## How to set environment variable for APP URL in Heroku
+```$xslt
+➜  ~ heroku config:set --app todo-mvc-scalajs APP_URL=$(heroku apps:info todo-mvc-scalajs -s  | grep web_url | cut -d= -f2)
+Setting APP_URL and restarting ⬢ todo-mvc-scalajs... done, v9
+APP_URL: https://todo-mvc-scalajs.herokuapp.com/
+```
