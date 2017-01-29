@@ -12,7 +12,7 @@ object Client extends js.JSApp {
   @JSExport
   def main(): Unit = {
     val host = sys.env.getOrElse("APP_URL", "localhost")
-
+    println(s"env variables: ${sys.env}")
     dom.document.body.appendChild(
       div(
         h1("Hello World!"),
